@@ -17,15 +17,18 @@ def init_board(row_length):
         board.append(copy_row)
     return board
 
-def print_board(board_state):
-    columns_labels = ["A", "B", "C", "D", "E"]
-    
-    print("  " +"columns_labels")
 
+def print_board(board_state):
+    columns_labels = ["A", "B", "C", "D"]
+
+    print(" ", end=" ")
+    for label in columns_labels:
+        print(label, end=" ")
+    print()
     for index, row in enumerate(board_state, 1):
-        print(f"{index}", end="")
+        print(f"{index}", end=" ")
         for i in range(len(columns_labels)):
-            print(board_state[index][i], end="")
+            print(board_state[index-1][i], end=" ")
         print()
 
 
