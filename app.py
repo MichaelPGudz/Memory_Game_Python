@@ -59,10 +59,43 @@ def populate_bord_with_symbols(board, symbols):
     populated_board = deepcopy(board)
     return populated_board
 
+def get_input():
+    while True:
+        coords = input("Please provide coordinates: \n ").upper()
+        if len(coords) != 2 or not coords[1].isdigit() or not coords[0].isalpha():
+            coords = input("Wrong input, please provide available coordinates: \n ").upper()
+        return coords
 
-if __name__ == '__main__':
+
+def coords_translation(coords):
+    columns_labels = ["A", "B", "C", "D", "E"]
+    col_index = columns_labels.index(coords[0])
+    row_index = int(coords[1]) - 1
+    return row_index, col_index
+
+
+def board_not_empty(board):
+    for row in board:
+        for mark in row:
+            if mark == "#":
+                return True
+    return False
+
+
+
+def main():
     board_size = set_board_size()
-    board = init_board(board_size)
-    print_board(board)
-    populated_board = populate_bord_with_symbols(board, get_symbols(board_size))
-    print_board(populated_board)
+    display_board = init_board(board_size)
+    print_board(display_board)
+    gettin_symbols = get_symbols(board_size)
+    hidden_board = populate_bord_with_symbols(display_board, gettin_symbols)
+
+    while board_not_empty(display_board):
+        coord1, coord2 = coords_translation(get_input())
+        display_board[coord1][coord2] = hidden_board[coord1][coord2]
+        print_board(display_board)
+        coord3, coord4 = coords_translation(get_input())
+
+        
+if __name__ == '__main__':
+    main()
