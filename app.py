@@ -110,7 +110,6 @@ def main():
     symbols = get_symbols(board_size)
     hidden_board_empty = init_board(board_size)
     hidden_board = populate_bord_with_symbols(hidden_board_empty, symbols)
-    print(hidden_board)
     while board_not_empty(visible_board):
         clean_console()
         print_board(visible_board)
@@ -128,6 +127,6 @@ def main():
 
 
 if __name__ == '__main__':
-
+    clean_console()
     print("Welcome to memory game!\n")
     main()
