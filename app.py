@@ -1,12 +1,19 @@
+import os
 import random
 from copy import deepcopy
+import time
+
+
+def clean_console():
+    os.system("cls || clear")
 
 
 def set_board_size():
     column_length = input("Please enter number of rows in the board: \n")
     acceptable_column_sizes = [4, 6, 10]
     while not column_length.isdigit() or int(column_length) not in acceptable_column_sizes:
-        column_length = input("Please enter number of rows in the board: \n")
+        column_length = input(f"Wrong input! Please choose a number from {acceptable_column_sizes}.\n"
+                              f"Number of rows in the board: \n")
     return int(column_length)
 
 
@@ -36,6 +43,7 @@ def print_board(board_state):
         for i in range(len(columns_labels)):
             print(board_state[index-1][i], end=" ")
         print()
+    print()
 
 
 def get_symbols(col_length):
@@ -56,15 +64,22 @@ def populate_bord_with_symbols(board, symbols):
             if board[row][column] == "#":
                 board[row][column] = symbol
                 counter += 1
-    populated_board = deepcopy(board)
-    return populated_board
+    return board
 
-def get_input():
-    while True:
-        coords = input("Please provide coordinates: \n ").upper()
-        if len(coords) != 2 or not coords[1].isdigit() or not coords[0].isalpha():
-            coords = input("Wrong input, please provide available coordinates: \n ").upper()
-        return coords
+
+def copy_table(board):
+    return deepcopy(board)
+
+
+def get_input(column_length):
+    columns_labels = ["A", "B", "C", "D", "E"]
+
+    coords = input("Please provide coordinates: \n ").upper()
+    while len(coords) != 2 or \
+            (not coords[0].isalpha() or coords[0] not in columns_labels) or \
+            (not coords[1].isdigit() or int(coords[1]) > column_length):
+        coords = input("Wrong input, please provide correct coordinates: \n ").upper()
+    return coords
 
 
 def coords_translation(coords):
@@ -82,20 +97,30 @@ def board_not_empty(board):
     return False
 
 
-
 def main():
     board_size = set_board_size()
     display_board = init_board(board_size)
-    print_board(display_board)
-    gettin_symbols = get_symbols(board_size)
-    hidden_board = populate_bord_with_symbols(display_board, gettin_symbols)
-
+    getting_symbols = get_symbols(board_size)
+    hidden_board = copy_table(display_board)
+    hidden_board = populate_bord_with_symbols(hidden_board, getting_symbols)
+    print(hidden_board)
     while board_not_empty(display_board):
-        coord1, coord2 = coords_translation(get_input())
+        print_board(display_board)
+        coord1, coord2 = coords_translation(get_input(board_size))
         display_board[coord1][coord2] = hidden_board[coord1][coord2]
         print_board(display_board)
-        coord3, coord4 = coords_translation(get_input())
+        coord3, coord4 = coords_translation(get_input(board_size))
+        display_board[coord3][coord4] = hidden_board[coord3][coord4]
+        if display_board[coord1][coord2] != display_board[coord3][coord4]:
+            print_board(display_board)
+            time.sleep(2.0)
+            display_board[coord1][coord2] = display_board[coord3][coord4] = "#"
+            # clean_console()
 
-        
+    print("You have won!")
+
+
 if __name__ == '__main__':
+    clean_console()
+    print("Welcome to memory game!\n")
     main()
