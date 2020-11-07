@@ -17,8 +17,21 @@ def init_board(row_length):
         board.append(copy_row)
     return board
 
+def print_board(board_state):
+    columns_labels = ["A", "B", "C", "D", "E"]
+    
+    print("  " +"columns_labels")
+
+    for index, row in enumerate(board_state, 1):
+        print(f"{index}", end="")
+        for i in range(len(columns_labels)):
+            print(board_state[index][i], end="")
+        print()
+
+
 
 
 if __name__ == '__main__':
     board_size = set_board_size()
-    print(init_board(board_size))
+    board = init_board(board_size)
+    print_board(board)
