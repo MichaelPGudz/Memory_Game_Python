@@ -1,6 +1,5 @@
 import os
 import random
-from copy import deepcopy
 import time
 
 
@@ -46,6 +45,18 @@ def print_board(board_state):
     print()
 
 
+def board_not_empty(board):
+    for row in board:
+        for mark in row:
+            if mark == "#":
+                return True
+    return False
+
+
+def place_is_empty(row, column, board):
+    return board[row][column] == "#"
+
+
 def get_symbols(col_length):
     allowed_characters = []
     for character in range(225, (225 + int(col_length * 5/2))):
@@ -67,60 +78,56 @@ def populate_bord_with_symbols(board, symbols):
     return board
 
 
-def copy_table(board):
-    return deepcopy(board)
-
-
 def get_input(column_length):
     columns_labels = ["A", "B", "C", "D", "E"]
 
-    coords = input("Please provide coordinates: \n ").upper()
-    while len(coords) != 2 or \
-            (not coords[0].isalpha() or coords[0] not in columns_labels) or \
-            (not coords[1].isdigit() or int(coords[1]) > column_length):
-        coords = input("Wrong input, please provide correct coordinates: \n ").upper()
-    return coords
+    coordinate = input("Please provide coordinate: \n ").upper()
+    while len(coordinate) != 2 or \
+            (not coordinate[0].isalpha() or coordinate[0] not in columns_labels) or \
+            (not coordinate[1].isdigit() or int(coordinate[1]) > column_length):
+        coordinate = input("Wrong input, please provide correct coordinate: \n ").upper()
+    return coordinate
 
 
-def coords_translation(coords):
+def coordinates_translation(coordinate):
     columns_labels = ["A", "B", "C", "D", "E"]
-    col_index = columns_labels.index(coords[0])
-    row_index = int(coords[1]) - 1
+    col_index = columns_labels.index(coordinate[0])
+    row_index = int(coordinate[1]) - 1
     return row_index, col_index
 
 
-def board_not_empty(board):
-    for row in board:
-        for mark in row:
-            if mark == "#":
-                return True
-    return False
+def ensure_correct_input(board_size, board):
+    row, column = coordinates_translation(get_input(board_size))
+    while not place_is_empty(row, column, board):
+        print("This spot is taken. Please enter coordinate again!")
+        row, column = coordinates_translation(get_input(board_size))
+    return row, column
 
 
 def main():
     board_size = set_board_size()
-    display_board = init_board(board_size)
-    getting_symbols = get_symbols(board_size)
-    hidden_board = copy_table(display_board)
-    hidden_board = populate_bord_with_symbols(hidden_board, getting_symbols)
+    visible_board = init_board(board_size)
+    symbols = get_symbols(board_size)
+    hidden_board_empty = init_board(board_size)
+    hidden_board = populate_bord_with_symbols(hidden_board_empty, symbols)
     print(hidden_board)
-    while board_not_empty(display_board):
-        print_board(display_board)
-        coord1, coord2 = coords_translation(get_input(board_size))
-        display_board[coord1][coord2] = hidden_board[coord1][coord2]
-        print_board(display_board)
-        coord3, coord4 = coords_translation(get_input(board_size))
-        display_board[coord3][coord4] = hidden_board[coord3][coord4]
-        if display_board[coord1][coord2] != display_board[coord3][coord4]:
-            print_board(display_board)
+    while board_not_empty(visible_board):
+        clean_console()
+        print_board(visible_board)
+        x1, y1 = ensure_correct_input(board_size, visible_board)
+        visible_board[x1][y1] = hidden_board[x1][y1]
+        print_board(visible_board)
+        x2, y2 = ensure_correct_input(board_size, visible_board)
+        visible_board[x2][y2] = hidden_board[x2][y2]
+        if visible_board[x1][y1] != visible_board[x2][y2]:
+            print_board(visible_board)
             time.sleep(2.0)
-            display_board[coord1][coord2] = display_board[coord3][coord4] = "#"
-            # clean_console()
-
+            visible_board[x1][y1] = visible_board[x2][y2] = "#"
+            clean_console()
     print("You have won!")
 
 
 if __name__ == '__main__':
-    clean_console()
+
     print("Welcome to memory game!\n")
     main()
